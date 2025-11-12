@@ -1,0 +1,80 @@
+{
+  "version": "1.0",
+  "rules": [
+    {
+      "name": "NO_NEW_FILES",
+      "description": "Only edit existing files unless explicitly asked to create new ones. Always search for and modify existing files first.",
+      "applies_to": ["always"],
+      "priority": "critical"
+    },
+    {
+      "name": "SEMANTIC_SEARCH_FIRST",
+      "description": "Use search_code with semantic patterns to find relevant files before reading. Always search recursively across directories.",
+      "applies_to": ["code_modification", "bug_fix", "feature_request"],
+      "priority": "high"
+    },
+    {
+      "name": "READ_FULL_CONTEXT",
+      "description": "Always read the entire file before modifying to understand structure, imports, and dependencies.",
+      "applies_to": ["code_modification", "refactor"],
+      "priority": "high"
+    },
+    {
+      "name": "EXPLAIN_BEFORE_TOOLS",
+      "description": "Always explain WHY you're calling a tool before using it. Be transparent about your reasoning.",
+      "applies_to": ["always"],
+      "priority": "critical"
+    },
+    {
+      "name": "CHECK_GIT_STATUS",
+      "description": "Check git status before making changes to understand current branch and uncommitted changes.",
+      "applies_to": ["code_modification", "git_operations"],
+      "priority": "medium"
+    },
+    {
+      "name": "USE_FEATURE_BRANCHES",
+      "description": "Always create a new feature branch before making code changes. Never work on main, master, develop, or dev.",
+      "applies_to": ["code_modification", "git_operations"],
+      "priority": "critical"
+    },
+    {
+      "name": "PROACTIVE_FILE_EXPLORATION",
+      "description": "When user mentions a file name, immediately search for it using semantic search patterns. Don't assume it's in a specific location.",
+      "applies_to": ["file_operations", "code_modification"],
+      "priority": "high"
+    },
+    {
+      "name": "TOOL_TRANSPARENCY",
+      "description": "Before calling any tool, explain what you're looking for and why. Example: 'I need to find Agents.tsx to shorten agent names. Searching in src directory...'",
+      "applies_to": ["always"],
+      "priority": "critical"
+    },
+    {
+      "name": "READ_RELATED_FILES",
+      "description": "When modifying a file, check for related files (imports, exports, components that use it) to avoid breaking dependencies.",
+      "applies_to": ["code_modification", "refactor"],
+      "priority": "medium"
+    },
+    {
+      "name": "COMMIT_AFTER_CHANGES",
+      "description": "After making changes, commit them with descriptive messages and push to the feature branch.",
+      "applies_to": ["code_modification"],
+      "priority": "medium"
+    }
+  ],
+  "tool_patterns": {
+    "find_file": {
+      "description": "When user mentions a file, use search_code with pattern like 'filename|FileName' and search in appropriate directory",
+      "example": "User says 'agents.tsx' → search_code pattern='agents\\.tsx|Agents\\.tsx' directory='src'"
+    },
+    "modify_file": {
+      "description": "Search → Read → Modify → Show changes. Always follow this sequence.",
+      "steps": ["search_code to find file", "read_file to get full context", "write_file to modify", "show changes in response"]
+    },
+    "debug_issue": {
+      "description": "Search for error messages, check git history, read relevant files, identify root cause",
+      "steps": ["search_code for error pattern", "git_status to see recent changes", "read_file relevant files", "identify fix"]
+    }
+  }
+}
+

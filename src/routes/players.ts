@@ -1,7 +1,21 @@
 import { Router, Request, Response } from 'express';
 import { Player, PlayerStats, PlayerDetail } from '../types/player';
 
-const router = Router();
+// Simple in-memory cache
+const playerCache: { [key: string]: { data: any; timestamp: number } } = {};
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
+const getCachedData = (key: string) => {
+  const entry = playerCache[key];
+  if (entry && (Date.now() - entry.timestamp < CACHE_DURATION)) {
+    return entry.data;
+  }
+  return null;
+};
+
+const setCachedData = (key: string, data: any) => {
+  playerCache[key] = { data, timestamp: Date.now() };
+};
 
 // Mock Data (replace with actual data fetching later)
 const mockPlayers: Player[] = [
@@ -53,27 +67,69 @@ const calculateFantasyScore = (stats: PlayerStats): number => {
   );
 };
 
+// Middleware for player validation
+const validatePlayerId = (req: Request, res: Response, next: Function) => {
+  const { id } = req.params;
+  if (!mockPlayers.some(p => p.id === id)) {
+    return res.status(404).send('Player not found');
+  }
+  next();
+};
+
 // GET /players
 router.get('/', (req: Request, res: Response) => {
+  const cachedPlayers = getCachedData('allPlayers');
+  if (cachedPlayers) {
+    return res.json(cachedPlayers);
+  }
+  setCachedData('allPlayers', mockPlayers);
   res.json(mockPlayers);
 });
 
 // GET /players/:id/stats
-router.get('/:id/stats', (req: Request, res: Response) => {
+router.get('/:id/stats', validatePlayerId, (req: Request, res: Response) => {
   const { id } = req.params;
+  const cacheKey = `playerStats-${id}`;
+  const cachedStats = getCachedData(cacheKey);
+  if (cachedStats) {
+    return res.json(cachedStats);
+  }
   const stats = mockPlayerStats[id];
-
   if (stats) {
+    setCachedData(cacheKey, stats);
     res.json(stats);
   } else {
     res.status(404).send('Player stats not found');
   }
 });
 
+// GET /players/:id/fantasyScore
+router.get('/:id/fantasyScore', validatePlayerId, (req: Request, res: Response) => {
+  const { id } = req.params;
+  const cacheKey = `fantasyScore-${id}`;
+  const cachedScore = getCachedData(cacheKey);
+  if (cachedScore) {
+    return res.json(cachedScore);
+  }
+  const stats = mockPlayerStats[id];
+  if (stats) {
+    const fantasyScore = calculateFantasyScore(stats);
+    setCachedData(cacheKey, { id, fantasyScore });
+    res.json({ id, fantasyScore });
+  } else {
+    res.status(404).send('Player stats not found');
+  }
+});
 
 // GET /topPlayers?limit=10&position=DEF|MID|FWD
 router.get('/topPlayers', (req: Request, res: Response) => {
-  let { limit, position } = req.query;
+  const { limit, position } = req.query;
+  const cacheKey = `topPlayers-${limit || 'noLimit'}-${position || 'noPosition'}`;
+  const cachedTopPlayers = getCachedData(cacheKey);
+  if (cachedTopPlayers) {
+    return res.json(cachedTopPlayers);
+  }
+
   let filteredPlayers: PlayerDetail[] = [];
 
   // Combine mockPlayers with their stats and fantasy scores
@@ -85,7 +141,7 @@ router.get('/topPlayers', (req: Request, res: Response) => {
 
   // Filter by position if provided
   if (position && typeof position === 'string') {
-    filteredPlayers = playersWithScores.filter(player => player.position === position.toUpperCase());
+    filteredPlayers = playersWithScores.filter(player => player.position === (position as string).toUpperCase());
   } else {
     filteredPlayers = playersWithScores;
   }
@@ -101,20 +157,8 @@ router.get('/topPlayers', (req: Request, res: Response) => {
     }
   }
 
+  setCachedData(cacheKey, filteredPlayers);
   res.json(filteredPlayers);
-});
-
-// GET /players/:id/fantasyScore
-router.get('/:id/fantasyScore', (req: Request, res: Response) => {
-  const { id } = req.params;
-  const stats = mockPlayerStats[id];
-
-  if (stats) {
-    const fantasyScore = calculateFantasyScore(stats);
-    res.json({ id, fantasyScore });
-  } else {
-    res.status(404).send('Player stats not found');
-  }
 });
 
 export default router;

@@ -44,10 +44,11 @@ app.use((error: unknown, req: Request, res: Response, next: NextFunction) => {
   console.error('Error:', error);
 
   if (error && typeof error === 'object' && 'code' in error && 'statusCode' in error) {
+  if (error && typeof error === 'object' && 'statusCode' in error && typeof error.statusCode === 'number') {
     const apiError = error as ApiError;
     return res.status(apiError.statusCode).json({
       error: apiError.message,
-      code: apiError.code,
+      code: ('code' in apiError && typeof apiError.code === 'string') ? apiError.code : 'API_ERROR',
     });
   }
 
@@ -57,6 +58,19 @@ app.use((error: unknown, req: Request, res: Response, next: NextFunction) => {
       code: 'INTERNAL_SERVER_ERROR',
     });
   }
+  
+  // Generic error handling for unexpected error types
+  if (error && typeof error === 'object' && 'message' in error && typeof error.message === 'string') {
+    return res.status(500).json({
+      error: error.message,
+      code: 'INTERNAL_SERVER_ERROR',
+    });
+  }
+
+  return res.status(500).json({
+    error: 'An unknown error occurred',
+    code: 'UNKNOWN_ERROR',
+  });
 
   res.status(500).json({
     error: 'An unexpected error occurred',

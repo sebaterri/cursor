@@ -1,0 +1,2 @@
+{\n  \"compilerOptions\": {\n    \"target\": \"es6\",\n    \"module\": \"commonjs\",\n    \"outDir\": \"./dist\",\n    \"rootDir\": \"./src\",\    \"strict\": true,\n    \"esModuleInterop\": true,\n    \"skipLibCheck\": true,\
+    \"forceConsistentCasingInFileNames\": true\n  },\n  \"include\": [\n    \"src/**/*.ts\"\n  ],\n  \"exclude\": [\n    \"node_modules\"\n  ]\n}

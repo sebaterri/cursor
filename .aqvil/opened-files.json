@@ -1,0 +1,34 @@
+{
+  "files": [
+    {
+      "path": "package.json",
+      "content": "{\n  \"name\": \"fantasy-soccer-backend\",\n  \"version\": \"1.0.0\",\n  \"description\": \"Backend for the interactive fantasy soccer dashboard\",\n  \"main\": \"dist/index.js\",\n  \"scripts\": {\n    \"start\": \"node dist/index.js\",\n    \"dev\": \"nodemon src/index.ts\",\n    \"build\": \"tsc\",\n    \"test\": \"echo \\\"Error: no test specified\\\" && exit 1\"\n  },\n  \"keywords\": [],\n  \"author\": \"\",\n  \"license\": \"ISC\",\n  \"dependencies\": {\n    \"express\": \"^4.18.2\"\n  },\n  \"devDependencies\": {\n    \"@types/express\": \"^4.17.21\",\n    \"@types/node\": \"^20.11.5\",\n    \"nodemon\": \"^3.0.3\",\n    \"ts-node\": \"^10.9.2\",\n    \"typescript\": \"^5.3.3\"\n  }\n}",
+      "previousContent": null,
+      "language": "auto"
+    },
+    {
+      "path": "tsconfig.json",
+      "content": "{\\n  \\\"compilerOptions\\\": {\\n    \\\"target\\\": \\\"es6\\\",\\n    \\\"module\\\": \\\"commonjs\\\",\\n    \\\"outDir\\\": \\\"./dist\\\",\\n    \\\"rootDir\\\": \\\"./src\\\",\\    \\\"strict\\\": true,\\n    \\\"esModuleInterop\\\": true,\\n    \\\"skipLibCheck\\\": true,\\\n    \\\"forceConsistentCasingInFileNames\\\": true\\n  },\\n  \\\"include\\\": [\\n    \\\"src/**/*.ts\\\"\\n  ],\\n  \\\"exclude\\\": [\\n    \\\"node_modules\\\"\\n  ]\\n}",
+      "previousContent": null,
+      "language": "auto"
+    },
+    {
+      "path": "src/index.ts",
+      "content": "import express from 'express';\n\nimport playerRoutes from './routes/players';\nconst app = express();\nconst PORT = process.env.PORT || 3000;\n\napp.use(express.json());\n\n\napp.use('/players', playerRoutes);\n\napp.get('/', (req, res) => {\n  res.send('Fantasy Soccer Backend is running!');\n});\n\napp.listen(PORT, () => {\n  console.log(`Server is running on port ${PORT}`);\n});\n",
+      "previousContent": null,
+      "language": "auto"
+    },
+    {
+      "path": "src/types/player.ts",
+      "content": "export interface Player {\n  id: string;\n  name: string;\n  club: string;\n  position: 'GK' | 'DEF' | 'MID' | 'FWD';\n  photo: string;\n}\n\nexport interface PlayerStats {\n  goals: number;\n  assists: number;\n  appearances: number;\n  cleanSheets: number;\n  yellowCards: number;\n  redCards: number;\n}\n\nexport interface PlayerDetail extends Player {\n  stats: PlayerStats;\n  fantasyScore: number;\n}\n",
+      "previousContent": null,
+      "language": "auto"
+    },
+    {
+      "path": "src/routes/players.ts",
+      "content": "import { Router, Request, Response } from 'express';\nimport { Player, PlayerStats, PlayerDetail } from '../types/player';\n\nconst router = Router();\n\n// Mock Data (replace with actual data fetching later)\nconst mockPlayers: Player[] = [\n  {\n    id: '1',\n    name: 'Lionel Messi',\n    club: 'PSG',\n    position: 'FWD',\n    photo: 'https://example.com/messi.jpg',\n  },\n  {\n    id: '2',\n    name: 'Cristiano Ronaldo',\n    club: 'Al Nassr',\n    position: 'FWD',\n    photo: 'https://example.com/ronaldo.jpg',\n  },\n  {\n    id: '3',\n    name: 'Virgil van Dijk',\n    club: 'Liverpool',\n    position: 'DEF',\n    photo: 'https://example.com/vandijk.jpg',\n  },\n  {\n    id: '4',\n    name: 'Kevin De Bruyne',\n    club: 'Manchester City',\n    position: 'MID',\n    photo: 'https://example.com/debruyne.jpg',\n  },\n];\n\nconst mockPlayerStats: { [key: string]: PlayerStats } = {\n  '1': { goals: 30, assists: 20, appearances: 40, cleanSheets: 0, yellowCards: 2, redCards: 0 },\n  '2': { goals: 25, assists: 10, appearances: 35, cleanSheets: 0, yellowCards: 5, redCards: 1 },\n  '3': { goals: 3, assists: 5, appearances: 45, cleanSheets: 20, yellowCards: 3, redCards: 0 },\n  '4': { goals: 15, assists: 25, appearances: 38, cleanSheets: 0, yellowCards: 4, redCards: 0 },\n};\n\n// Helper function to calculate fantasy score\nconst calculateFantasyScore = (stats: PlayerStats): number => {\n  return (\n    stats.goals * 4 +\n    stats.assists * 3 +\n    stats.cleanSheets * 2 -\n    stats.yellowCards -\n    stats.redCards * 3\n  );\n};\n\n// GET /players\nrouter.get('/', (req: Request, res: Response) => {\n  res.json(mockPlayers);\n});\n\n// GET /players/:id/stats\nrouter.get('/:id/stats', (req: Request, res: Response) => {\n  const { id } = req.params;\n  const stats = mockPlayerStats[id];\n\n  if (stats) {\n    res.json(stats);\n  } else {\n    res.status(404).send('Player stats not found');\n  }\n});\n\n\n// GET /topPlayers?limit=10&position=DEF|MID|FWD\nrouter.get('/topPlayers', (req: Request, res: Response) => {\n  let { limit, position } = req.query;\n  let filteredPlayers: PlayerDetail[] = [];\n\n  // Combine mockPlayers with their stats and fantasy scores\n  const playersWithScores: PlayerDetail[] = mockPlayers.map(player => {\n    const stats = mockPlayerStats[player.id];\n    const fantasyScore = stats ? calculateFantasyScore(stats) : 0;\n    return { ...player, stats, fantasyScore };\n  });\n\n  // Filter by position if provided\n  if (position && typeof position === 'string') {\n    filteredPlayers = playersWithScores.filter(player => player.position === position.toUpperCase());\n  } else {\n    filteredPlayers = playersWithScores;\n  }\n\n  // Sort by fantasy score in descending order\n  filteredPlayers.sort((a, b) => b.fantasyScore - a.fantasyScore);\n\n  // Apply limit if provided\n  if (limit) {\n    const parsedLimit = parseInt(limit as string, 10);\n    if (!isNaN(parsedLimit)) {\n      filteredPlayers = filteredPlayers.slice(0, parsedLimit);\n    }\n  }\n\n  res.json(filteredPlayers);\n});\n\n// GET /players/:id/fantasyScore\nrouter.get('/:id/fantasyScore', (req: Request, res: Response) => {\n  const { id } = req.params;\n  const stats = mockPlayerStats[id];\n\n  if (stats) {\n    const fantasyScore = calculateFantasyScore(stats);\n    res.json({ id, fantasyScore });\n  } else {\n    res.status(404).send('Player stats not found');\n  }\n});\n\nexport default router;\n",
+      "previousContent": null,
+      "language": "auto"
+    }
+  ]
+}

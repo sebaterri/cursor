@@ -56,12 +56,25 @@ while running:
         if event.type == pygame.MOUSEBUTTONDOWN:
             # Get the mouse position
             mouse_x, mouse_y = event.pos
-            # Check if player has enough score
-            if score >= tower_costs[selected_tower_type]:
-                # Create a new tower at the mouse position
-                new_tower = selected_tower_type(mouse_x, mouse_y)
-                towers.append(new_tower)
-                score -= tower_costs[selected_tower_type]
+
+            # Check if click is within screen bounds
+            if 0 <= mouse_x <= screen_width and 0 <= mouse_y <= screen_height:
+
+                # Check if there is already a tower at that location
+                can_place_tower = True
+                for tower in towers:
+                    distance = ((mouse_x - tower.x) ** 2 + (mouse_y - tower.y) ** 2) ** 0.5
+                    if distance < 40:  # Check if too close to another tower
+                        can_place_tower = False
+                        break
+
+                if can_place_tower:
+                    # Check if player has enough score
+                    if score >= tower_costs[selected_tower_type]:
+                        # Create a new tower at the mouse position
+                        new_tower = selected_tower_type(mouse_x, mouse_y)
+                        towers.append(new_tower)
+                        score -= tower_costs[selected_tower_type]
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_1:
                 if score >= tower_costs[Tower]:

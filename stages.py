@@ -1,7 +1,7 @@
 # stages.py
 
 import pygame
-from enemies import Enemy
+from enemies import Enemy, StrongEnemy
 
 class Stage:
     def __init__(self, waves):
@@ -19,7 +19,21 @@ class Stage:
                     if enemy_type == 'basic':
                         enemy = Enemy(0, 50)
                         self.add_enemy(enemy)
+                    elif enemy_type == 'strong':
+                        enemy = StrongEnemy(0, 50)
+                        self.add_enemy(enemy)
             self.current_wave += 1
+
+    def add_enemy(self, enemy):
+        self.enemies.append(enemy)
+
+    def update(self):
+        for enemy in self.enemies:
+            enemy.move()
+
+    def draw(self, screen):
+        for enemy in self.enemies:
+            enemy.draw(screen)
 
     def add_enemy(self, enemy):
         self.enemies.append(enemy)

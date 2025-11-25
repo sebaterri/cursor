@@ -16,6 +16,7 @@ pygame.display.set_caption("Tower Defense")
 waves = [
     [{'type': 'basic', 'count': 5}],  # Wave 1: 5 basic enemies
     [{'type': 'basic', 'count': 10}], # Wave 2: 10 basic enemies
+    [{'type': 'strong', 'count': 3}]   # Wave 3: 3 strong enemies
 ]
 
 # Initialize stage

@@ -21,8 +21,8 @@ waves = [
 # Initialize stage
 stage = Stage(waves)
 
-# Initialize a tower
-tower = Tower(100, 100)
+# Initialize towers list
+towers = []
 
 # Game loop
 running = True
@@ -33,6 +33,12 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            # Get the mouse position
+            mouse_x, mouse_y = event.pos
+            # Create a new tower at the mouse position
+            new_tower = Tower(mouse_x, mouse_y)
+            towers.append(new_tower)
 
     # Spawn enemies every 3 seconds
     if frame_count % (60 * 3) == 0:
@@ -47,8 +53,9 @@ while running:
     # Draw stage
     stage.draw(screen)
 
-    # Draw tower
-    tower.draw(screen)
+    # Draw towers
+    for tower in towers:
+        tower.draw(screen)
 
     # Update display
     pygame.display.flip()

@@ -50,6 +50,13 @@ while running:
     # Update stage
     stage.update()
 
+    # Tower targeting and attacking
+    for tower in towers:
+        tower.target(stage.enemies)
+        if tower.target_enemy:
+            if tower.attack():
+                stage.enemies.remove(tower.target_enemy)
+
     # Draw stage
     stage.draw(screen)
 

@@ -10,6 +10,7 @@ class Enemy:
         self.speed = 1
         self.original_speed = 1 # Store original speed
         self.slowed = False
+        self.slow_duration = 0  # Duration of slow effect
 
     def move(self):
         self.x += self.speed
@@ -21,14 +22,21 @@ class Enemy:
         return self.x >= screen_width
 
     def slow(self):
-      if not self.slowed:
-        self.speed = self.speed * 0.5
-        self.slowed = True
+        if not self.slowed:
+            self.speed = self.speed * 0.5
+            self.slowed = True
+            self.slow_duration = 120  # Set slow duration to 2 seconds (60 frames per second)
 
     def unslow(self):
-      if self.slowed:
-        self.speed = self.original_speed
-        self.slowed = False
+        if self.slowed:
+            self.speed = self.original_speed
+            self.slowed = False
+
+    def update_slow(self):
+        if self.slowed:
+            self.slow_duration -= 1
+            if self.slow_duration <= 0:
+                self.unslow()
 
     def draw_slowed(self, screen):
         pygame.draw.circle(screen, (0, 255, 0), (int(self.x + 10), int(self.y + 10)), 15, 2)

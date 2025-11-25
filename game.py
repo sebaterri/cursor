@@ -28,6 +28,13 @@ towers = []
 # Selected tower type
 selected_tower_type = Tower  # Default tower type
 
+# Initialize score
+score = 0
+
+# Initialize font
+pygame.font.init()
+font = pygame.font.SysFont('Arial', 20)
+
 # Game loop
 running = True
 clock = pygame.time.Clock()
@@ -65,6 +72,7 @@ while running:
         if tower.target_enemy:
             if tower.attack():
                 stage.enemies.remove(tower.target_enemy)
+                score += 10  # Increase score when enemy is defeated
 
     # Draw stage
     stage.draw(screen)
@@ -72,6 +80,12 @@ while running:
     # Draw towers
     for tower in towers:
         tower.draw(screen)
+
+    # Render score and wave number
+    score_text = font.render(f'Score: {score}', True, (255, 255, 255))
+    wave_text = font.render(f'Wave: {stage.current_wave + 1}', True, (255, 255, 255))
+    screen.blit(score_text, (10, 10))
+    screen.blit(wave_text, (10, 30))
 
     # Update display
     pygame.display.flip()

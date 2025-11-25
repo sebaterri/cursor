@@ -1,5 +1,5 @@
 import pygame
-from towers import Tower
+from towers import Tower, LongRangeTower
 from enemies import Enemy
 from stages import Stage
 
@@ -25,6 +25,9 @@ stage = Stage(waves)
 # Initialize towers list
 towers = []
 
+# Selected tower type
+selected_tower_type = Tower  # Default tower type
+
 # Game loop
 running = True
 clock = pygame.time.Clock()
@@ -38,8 +41,13 @@ while running:
             # Get the mouse position
             mouse_x, mouse_y = event.pos
             # Create a new tower at the mouse position
-            new_tower = Tower(mouse_x, mouse_y)
+            new_tower = selected_tower_type(mouse_x, mouse_y)
             towers.append(new_tower)
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_1:
+                selected_tower_type = Tower
+            elif event.key == pygame.K_2:
+                selected_tower_type = LongRangeTower
 
     # Spawn enemies every 3 seconds
     if frame_count % (60 * 3) == 0:

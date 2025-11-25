@@ -30,3 +30,12 @@ class Tower:
 
     def draw(self, screen):
         pygame.draw.circle(screen, (0, 255, 0), (self.x, self.y), 20)
+
+class LongRangeTower(Tower):
+    def __init__(self, x, y):
+        super().__init__(x, y)
+        self.damage = 5
+        self.range = 200
+
+    def draw(self, screen):
+        pygame.draw.circle(screen, (0, 0, 255), (self.x, self.y), 20)

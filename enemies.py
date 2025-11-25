@@ -8,6 +8,8 @@ class Enemy:
         self.y = y
         self.health = 50
         self.speed = 1
+        self.original_speed = 1 # Store original speed
+        self.slowed = False
 
     def move(self):
         self.x += self.speed
@@ -18,11 +20,26 @@ class Enemy:
     def has_reached_end(self, screen_width):
         return self.x >= screen_width
 
+    def slow(self):
+      if not self.slowed:
+        self.speed = self.speed * 0.5
+        self.slowed = True
+
+    def unslow(self):
+      if self.slowed:
+        self.speed = self.original_speed
+        self.slowed = False
+
+    def draw_slowed(self, screen):
+        pygame.draw.circle(screen, (0, 255, 0), (int(self.x + 10), int(self.y + 10)), 15, 2)
+
+
 class StrongEnemy(Enemy):
     def __init__(self, x, y):
         super().__init__(x, y)
         self.health = 150  # Increased health
         self.speed = 0.5
+        self.original_speed = 0.5
 
     def draw(self, screen):
         pygame.draw.rect(screen, (255, 100, 100), (self.x, self.y, 30, 30))
@@ -32,6 +49,7 @@ class FastEnemy(Enemy):
         super().__init__(x, y)
         self.health = 20  # Decreased health
         self.speed = 2
+        self.original_speed = 2
 
     def draw(self, screen):
         pygame.draw.rect(screen, (0, 255, 255), (self.x, self.y, 15, 15))

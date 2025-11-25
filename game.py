@@ -81,6 +81,7 @@ while running:
                 score += 10  # Increase score when enemy is defeated
             elif isinstance(tower, SlowingTower):
                 pygame.draw.line(screen, (0, 255, 0), (tower.x, tower.y), (tower.target_enemy.x, tower.target_enemy.y), 2)
+                tower.target_enemy.slow()
             elif isinstance(tower, LongRangeTower) and tower.target_enemy.health <= 0:
                  pygame.draw.line(screen, (255, 255, 0), (tower.x, tower.y), (tower.target_enemy.x, tower.target_enemy.y), 2)
                  stage.enemies.remove(tower.target_enemy)
@@ -99,6 +100,11 @@ while running:
     # Draw towers
     for tower in towers:
         tower.draw(screen)
+
+    # Draw slowed enemies
+    for enemy in stage.enemies:
+      if enemy.slowed:
+        enemy.draw_slowed(screen)
 
     # Render score and wave number
     score_text = font.render(f'Score: {score}', True, (255, 255, 255))

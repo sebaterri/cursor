@@ -72,6 +72,7 @@ while running:
         tower.target(stage.enemies)
         if tower.target_enemy:
             if tower.attack():
+                pygame.draw.line(screen, (255, 255, 0), (tower.x, tower.y), (tower.target_enemy.x, tower.target_enemy.y), 2)
                 stage.enemies.remove(tower.target_enemy)
                 score += 10  # Increase score when enemy is defeated
 

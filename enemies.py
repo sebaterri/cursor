@@ -27,6 +27,15 @@ class StrongEnemy(Enemy):
     def draw(self, screen):
         pygame.draw.rect(screen, (255, 100, 100), (self.x, self.y, 30, 30))
 
+class FastEnemy(Enemy):
+    def __init__(self, x, y):
+        super().__init__(x, y)
+        self.health = 25
+        self.speed = 2
+
+    def draw(self, screen):
+        pygame.draw.rect(screen, (0, 255, 255), (self.x, self.y, 15, 15))
+
 class StrongEnemy(Enemy):
     def __init__(self, x, y):
         super().__init__(x, y)

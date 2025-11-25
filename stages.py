@@ -1,7 +1,7 @@
 # stages.py
 
 import pygame
-from enemies import Enemy, StrongEnemy
+from enemies import Enemy, StrongEnemy, FastEnemy
 
 class Stage:
     def __init__(self, waves):
@@ -21,6 +21,9 @@ class Stage:
                         self.add_enemy(enemy)
                     elif enemy_type == 'strong':
                         enemy = StrongEnemy(0, 50)
+                        self.add_enemy(enemy)
+                    elif enemy_type == 'fast':
+                        enemy = FastEnemy(0, 50)
                         self.add_enemy(enemy)
             self.current_wave += 1
 

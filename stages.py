@@ -4,10 +4,11 @@ import pygame
 from enemies import Enemy, StrongEnemy, FastEnemy
 
 class Stage:
-    def __init__(self, waves):
+    def __init__(self, waves, path):
         self.waves = waves
         self.current_wave = 0
         self.enemies = []
+        self.path = path
 
     def spawn_enemies(self):
         if self.current_wave < len(self.waves):
@@ -17,13 +18,13 @@ class Stage:
                 enemy_count = enemy_data['count']
                 for _ in range(enemy_count):
                     if enemy_type == 'basic':
-                        enemy = Enemy(0, 50)
+                        enemy = Enemy(self.path)
                         self.add_enemy(enemy)
                     elif enemy_type == 'strong':
-                        enemy = StrongEnemy(0, 50)
+                        enemy = StrongEnemy(self.path)
                         self.add_enemy(enemy)
                     elif enemy_type == 'fast':
-                        enemy = FastEnemy(0, 50)
+                        enemy = FastEnemy(self.path)
                         self.add_enemy(enemy)
             self.current_wave += 1
 

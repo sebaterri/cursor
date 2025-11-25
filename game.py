@@ -12,6 +12,9 @@ screen_height = 600
 screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption("Tower Defense")
 
+# Define the path
+path = [(0, 100), (200, 100), (200, 200), (600, 200), (600, 300), (800, 300)]
+
 # Define waves for the stage
 waves = [
     [{'type': 'basic', 'count': 5}],  # Wave 1: 5 basic enemies
@@ -21,7 +24,7 @@ waves = [
 ]
 
 # Initialize stage
-stage = Stage(waves)
+stage = Stage(waves, path)
 
 # Initialize towers list
 towers = []
@@ -118,10 +121,21 @@ while running:
     # Update enemies (including slow status)
     for enemy in stage.enemies[:]:
         enemy.update_slow()
-        if enemy.has_reached_end(screen_width):
+        #if enemy.has_reached_end(screen_width):
+        #    game_over = True
+        #    running = False
+        #    break
+        if enemy.path_index == len(enemy.path) - 1:
             game_over = True
             running = False
             break
+
+    # Check for game over
+    #for enemy in stage.enemies[:]: #moved before drawing stage
+    #    if enemy.has_reached_end(screen_width):
+    #        game_over = True
+    #        running = False
+    #        break
 
     # Draw stage
     stage.draw(screen)

@@ -21,7 +21,7 @@ class Enemy:
 class StrongEnemy(Enemy):
     def __init__(self, x, y):
         super().__init__(x, y)
-        self.health = 100
+        self.health = 150  # Increased health
         self.speed = 0.5
 
     def draw(self, screen):
@@ -30,7 +30,7 @@ class StrongEnemy(Enemy):
 class FastEnemy(Enemy):
     def __init__(self, x, y):
         super().__init__(x, y)
-        self.health = 25
+        self.health = 20  # Decreased health
         self.speed = 2
 
     def draw(self, screen):

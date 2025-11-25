@@ -23,10 +23,13 @@ class Tower:
 
     def attack(self):
         if self.target_enemy:
-            self.target_enemy.health -= self.damage
-            if self.target_enemy.health <= 0:
-                return True # Enemy defeated
+            # No damage, just slow
+            self.apply_slow(self.target_enemy)
+            return False  # Don't defeat enemy
         return False
+
+    def apply_slow(self, enemy):
+        enemy.speed = max(enemy.speed * 0.5, 0.2) # Reduce speed by 50%, but not below 0.2
 
     def draw(self, screen):
         pygame.draw.circle(screen, (0, 255, 0), (self.x, self.y), 20)
@@ -39,3 +42,18 @@ class LongRangeTower(Tower):
 
     def draw(self, screen):
         pygame.draw.circle(screen, (0, 0, 255), (self.x, self.y), 20)
+
+class SlowingTower(Tower):
+    def __init__(self, x, y):
+        super().__init__(x, y)
+        self.range = 80
+
+    def attack(self):
+        # Override attack to only apply slow
+        if self.target_enemy:
+            self.apply_slow(self.target_enemy)
+            return False
+        return False
+
+    def draw(self, screen):
+        pygame.draw.circle(screen, (200, 200, 200), (self.x, self.y), 20)

@@ -1,5 +1,5 @@
 import pygame
-from towers import Tower, LongRangeTower
+from towers import Tower, LongRangeTower, SlowingTower
 from enemies import Enemy
 from stages import Stage
 
@@ -57,6 +57,8 @@ while running:
                 selected_tower_type = Tower
             elif event.key == pygame.K_2:
                 selected_tower_type = LongRangeTower
+            elif event.key == pygame.K_3:
+                selected_tower_type = SlowingTower
 
     # Spawn enemies every 3 seconds
     if frame_count % (60 * 3) == 0:
@@ -72,10 +74,17 @@ while running:
     for tower in towers:
         tower.target(stage.enemies)
         if tower.target_enemy:
-            if tower.attack():
+            tower.attack()
+            if isinstance(tower, Tower) and tower.target_enemy.health <= 0:
                 pygame.draw.line(screen, (255, 255, 0), (tower.x, tower.y), (tower.target_enemy.x, tower.target_enemy.y), 2)
                 stage.enemies.remove(tower.target_enemy)
                 score += 10  # Increase score when enemy is defeated
+            elif isinstance(tower, SlowingTower):
+                pygame.draw.line(screen, (0, 255, 0), (tower.x, tower.y), (tower.target_enemy.x, tower.target_enemy.y), 2)
+            elif isinstance(tower, LongRangeTower) and tower.target_enemy.health <= 0:
+                 pygame.draw.line(screen, (255, 255, 0), (tower.x, tower.y), (tower.target_enemy.x, tower.target_enemy.y), 2)
+                 stage.enemies.remove(tower.target_enemy)
+                 score += 10
 
     # Check for game over
     for enemy in stage.enemies[:]:

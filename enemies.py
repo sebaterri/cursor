@@ -15,6 +15,18 @@ class Enemy:
     def draw(self, screen):
         pygame.draw.rect(screen, (255, 0, 0), (self.x, self.y, 20, 20))
 
+    def has_reached_end(self, screen_width):
+        return self.x >= screen_width
+
+class StrongEnemy(Enemy):
+    def __init__(self, x, y):
+        super().__init__(x, y)
+        self.health = 100
+        self.speed = 0.5
+
+    def draw(self, screen):
+        pygame.draw.rect(screen, (255, 100, 100), (self.x, self.y, 30, 30))
+
 class StrongEnemy(Enemy):
     def __init__(self, x, y):
         super().__init__(x, y)

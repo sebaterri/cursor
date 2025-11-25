@@ -37,6 +37,7 @@ font = pygame.font.SysFont('Arial', 20)
 
 # Game loop
 running = True
+game_over = False
 clock = pygame.time.Clock()
 frame_count = 0
 
@@ -74,6 +75,13 @@ while running:
                 stage.enemies.remove(tower.target_enemy)
                 score += 10  # Increase score when enemy is defeated
 
+    # Check for game over
+    for enemy in stage.enemies[:]:
+        if enemy.has_reached_end(screen_width):
+            game_over = True
+            running = False
+            break
+
     # Draw stage
     stage.draw(screen)
 
@@ -92,6 +100,13 @@ while running:
 
     clock.tick(60)
     frame_count += 1
+
+# Game Over screen
+if game_over:
+    game_over_text = font.render("Game Over", True, (255, 0, 0))
+    screen.blit(game_over_text, (screen_width // 2 - 50, screen_height // 2))
+    pygame.display.flip()
+    pygame.time.wait(2000)  # Wait for 2 seconds
 
 # Quit Pygame
 pygame.quit()

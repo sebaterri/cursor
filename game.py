@@ -26,11 +26,18 @@ stage = Stage(waves)
 # Initialize towers list
 towers = []
 
+# Tower costs
+tower_costs = {
+    Tower: 50,
+    LongRangeTower: 75,
+    SlowingTower: 100
+}
+
 # Selected tower type
 selected_tower_type = Tower  # Default tower type
 
 # Initialize score
-score = 0
+score = 150 # give the player some starting score
 
 # Initialize font
 pygame.font.init()
@@ -49,16 +56,22 @@ while running:
         if event.type == pygame.MOUSEBUTTONDOWN:
             # Get the mouse position
             mouse_x, mouse_y = event.pos
-            # Create a new tower at the mouse position
-            new_tower = selected_tower_type(mouse_x, mouse_y)
-            towers.append(new_tower)
+            # Check if player has enough score
+            if score >= tower_costs[selected_tower_type]:
+                # Create a new tower at the mouse position
+                new_tower = selected_tower_type(mouse_x, mouse_y)
+                towers.append(new_tower)
+                score -= tower_costs[selected_tower_type]
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_1:
-                selected_tower_type = Tower
+                if score >= tower_costs[Tower]:
+                    selected_tower_type = Tower
             elif event.key == pygame.K_2:
-                selected_tower_type = LongRangeTower
+                if score >= tower_costs[LongRangeTower]:
+                    selected_tower_type = LongRangeTower
             elif event.key == pygame.K_3:
-                selected_tower_type = SlowingTower
+                if score >= tower_costs[SlowingTower]:
+                    selected_tower_type = SlowingTower
 
     # Spawn enemies every 3 seconds
     if frame_count % (60 * 3) == 0:
@@ -96,13 +109,6 @@ while running:
             game_over = True
             running = False
             break
-
-    # Check for game over
-    #for enemy in stage.enemies[:]: #moved before drawing stage
-    #    if enemy.has_reached_end(screen_width):
-    #        game_over = True
-    #        running = False
-    #        break
 
     # Draw stage
     stage.draw(screen)

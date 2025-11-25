@@ -107,7 +107,7 @@ while running:
                 score += 10  # Increase score when enemy is defeated
                 tower.target_enemy = None # Reset target
             elif isinstance(tower, SlowingTower):
-                pygame.draw.line(screen, (0, 255, 0), (tower.x, tower.y), (tower.target_enemy.x, tower.target_enemy.y), 2)
+                pygame.draw.line(screen, (0, 255, 0), (tower.x, tower.target_enemy.x, tower.target_enemy.y), 2)
                 tower.target_enemy.slow()
             elif isinstance(tower, LongRangeTower) and tower.target_enemy.health <= 0:
                 pygame.draw.line(screen, (255, 255, 0), (tower.x, tower.y), (tower.target_enemy.x, tower.target_enemy.y), 2)
@@ -138,8 +138,10 @@ while running:
     # Render score and wave number
     score_text = font.render(f'Score: {score}', True, (255, 255, 255))
     wave_text = font.render(f'Wave: {stage.current_wave + 1}', True, (255, 255, 255))
+    tower_text = font.render(f'Tower: {selected_tower_type.__name__}', True, (255, 255, 255))
     screen.blit(score_text, (10, 10))
     screen.blit(wave_text, (10, 30))
+    screen.blit(tower_text, (10, 50))
 
     # Update display
     pygame.display.flip()

@@ -12,22 +12,31 @@ screen_height = 600
 screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption("Tower Defense")
 
-# Initialize stage
-stage = Stage()
+# Define waves for the stage
+waves = [
+    [{'type': 'basic', 'count': 5}],  # Wave 1: 5 basic enemies
+    [{'type': 'basic', 'count': 10}], # Wave 2: 10 basic enemies
+]
 
-# Add an enemy to the stage
-enemy = Enemy(50, 50)
-stage.add_enemy(enemy)
+# Initialize stage
+stage = Stage(waves)
 
 # Initialize a tower
 tower = Tower(100, 100)
 
 # Game loop
 running = True
+clock = pygame.time.Clock()
+frame_count = 0
+
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+
+    # Spawn enemies every 3 seconds
+    if frame_count % (60 * 3) == 0:
+        stage.spawn_enemies()
 
     # Clear the screen
     screen.fill((0, 0, 0))  # Black background
@@ -43,6 +52,9 @@ while running:
 
     # Update display
     pygame.display.flip()
+
+    clock.tick(60)
+    frame_count += 1
 
 # Quit Pygame
 pygame.quit()
